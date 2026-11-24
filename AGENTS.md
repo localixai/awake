@@ -19,7 +19,7 @@ newer means sleep again, older means end, and the holder ends with it.
 | `.claude-plugin/` | `plugin.json` (the Claude Code manifest), `marketplace.json` (this repo is its own marketplace) |
 | `plugin.json`, `hooks.json` | The Agent Plugins core manifest and hooks: the same plugin for a core client |
 | `hooks/hooks.json` | Claude Code's hooks: the events that mean work, each running `bin/awake hook`, and the hooks module |
-| `hooks/register.ts`, `hooks/label.ts` | The hooks module: Claude Code's status line entry (`awake: 14m`), read from the shared folder's file times |
+| `hooks/register.ts`, `hooks/label.ts` | The hooks module: the pulse (marks the activity once a minute while a turn, a tool call or background work lasts) and Claude Code's status line entry (`awake: 14m`, `awake: waiting: 1 task`) |
 | `bin/awake` | The hook and `awake status`. POSIX `sh`, the hot path: no Node on a call that finds the keeper alive |
 | `lib/keeper.mjs` | The keeper: `launch`, `run`, `status` |
 | `lib/holder.mjs` | The system's keep-awake program per platform, tied to the keeper's process |
@@ -46,6 +46,9 @@ newer means sleep again, older means end, and the holder ends with it.
   again (`lib/keeper.mjs`).
 - **The holder ends with the keeper.** It is tied to the keeper's process id (`caffeinate -w`,
   `tail --pid`), so a crash or a kill takes the hold along. A new platform's holder does the same.
+- **The pulse changes nothing of the person's.** It writes `activity` alone, only into a folder the
+  hook made, starts no process and ends with the session. What it counts as work is a turn, a tool
+  call and `background_tasks` at `Stop`; waiting for a person and scheduled wakeups are not work.
 - **The status line stays minimal.** One short entry, no pane, no process: the module reads file
   times only, and names the folder exactly as `bin/awake` does (`hooks/label.ts`, `stateDir`).
 - **Nothing reaches the agent.** The hook prints nothing and exits 0 whatever happens; failures go

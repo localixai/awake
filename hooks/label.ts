@@ -1,7 +1,8 @@
-// What the status line says, from the shared folder's two files: nothing while no agent has
-// worked within the window; the minutes left, rounded up, while the computer is held (`14m`, and
-// `1m` in the last one); `not held` when the system refused the hold (`awake status` says why).
-// The engine puts `awake:` before it.
+// What the status line says, from the shared folder's two files and this session's background work:
+// nothing while no agent has worked within the window; the minutes left, rounded up, while the
+// computer is held (`14m`, and `1m` in the last one); `waiting: 1 task` while the session holds it
+// for background work, so a forgotten server is seen; `not held` when the system refused the hold
+// (`awake status` says why). The engine puts `awake:` before it.
 
 export const DEFAULT_SECONDS = 900
 
@@ -27,16 +28,20 @@ export function windowSeconds(value: string | undefined): number {
  * @param now milliseconds since the epoch
  * @param activity the time of the last sign of work, if any
  * @param failed the time the last hold was refused, if it was
+ * @param tasks this session's background work in flight at its last answer
  */
 export function label(input: {
   now: number
   activity?: number
   failed?: number
   window: number
+  tasks?: number
 }): string | undefined {
   const left = (input.activity ?? 0) + input.window * 1000 - input.now
   if (left <= 0) return undefined
   if (input.failed !== undefined) return 'not held'
+  const tasks = input.tasks ?? 0
+  if (tasks > 0) return `waiting: ${tasks} ${tasks === 1 ? 'task' : 'tasks'}`
   return `${Math.ceil(left / 60_000)}m`
 }
 

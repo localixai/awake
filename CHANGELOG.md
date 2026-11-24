@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.3.0
+
+- **Work that sends no event keeps the computer awake too,** in Claude Code: a model turn still
+  running, a tool call that takes long, and background work the agent waits on after it answered
+  (a build started with `run_in_background`, a background subagent, a monitor). While any of these
+  lasts, the plugin marks the activity once a minute; when it ends, the hold runs out as before.
+  Waiting for a person does not count, and neither do scheduled wakeups.
+- **The status line says what the hold waits on:** `awake: waiting: 1 task` while it is held for
+  background work, so a server left running in the background is seen.
+- The plugin still changes no setting: the mark is one file's time in its own folder, written only
+  when the hook has made that folder, with no process started. `AWAKE=off` turns it off too.
+
 ## 0.2.0
 
 - **The status line shows how long the computer stays awake** in Claude Code: `awake: 14m` while it
