@@ -4,8 +4,9 @@
 
 - **The status line shows how long the computer stays awake** in Claude Code: `awake: 14m` while it
   is held, `awake: not held` when the system refused the hold, and nothing once no agent has worked
-  for the window. It reads two files' times every 30 seconds and a second after each prompt, and
-  starts no process. `AWAKE=off` hides it too.
+  for the window. It reads two files' times when the label would change (the next minute down, the
+  end of the hold), at least every 30 seconds, and a second after each prompt; it starts no
+  process. `AWAKE=off` hides it too.
 
 ## 0.1.0
 
