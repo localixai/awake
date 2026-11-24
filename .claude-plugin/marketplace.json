@@ -1,0 +1,14 @@
+{
+  "name": "awake",
+  "owner": {
+    "name": "Localix Lab"
+  },
+  "description": "Keeps the computer awake while an agent works, and lets it sleep when the agent goes quiet.",
+  "plugins": [
+    {
+      "name": "awake",
+      "source": "./",
+      "description": "Keeps the computer awake while an agent works, and lets it sleep when the agent goes quiet."
+    }
+  ]
+}

@@ -1,0 +1,52 @@
+#!/bin/sh
+# awake: keeps the computer awake while an agent works.
+#
+#   awake hook      the hook of every event that means work; the event's JSON on stdin
+#   awake status    whether the computer is held awake, and for how long
+#
+# The hook is the hot path, run on every tool call of every agent: it marks the activity, checks
+# that the one keeper of this user is alive, and only when it is not starts one (lib/keeper.mjs).
+# No Node, no JSON parsing, nothing printed: a shell, `cat` and `touch`. It always exits 0, so it
+# never changes what the agent does.
+
+root=${0%/*}/..
+dir=${AWAKE_DIR:-${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/localix-awake-${USER:-$(id -u)}}
+
+case $1 in
+status)
+  if command -v node >/dev/null 2>&1; then exec node "$root/lib/keeper.mjs" status "$dir"; fi
+  echo "Not held: $(cat "$dir/failed" 2>/dev/null || echo 'node is not on PATH')"
+  exit 0
+  ;;
+hook) ;;
+*)
+  echo "usage: awake hook | awake status" >&2
+  exit 2
+  ;;
+esac
+
+# Read the event to its end: a client may still be writing it when the hook would exit.
+cat >/dev/null
+
+case ${AWAKE:-on} in 0 | off | false | no) exit 0 ;; esac
+
+[ -d "$dir" ] || mkdir -p -m 700 "$dir" 2>/dev/null || exit 0
+touch "$dir/activity" 2>/dev/null || exit 0
+
+# The keeper is alive: it reads the activity's time itself when its timer fires.
+if read -r pid 2>/dev/null <"$dir/keeper.pid" && kill -0 "$pid" 2>/dev/null; then
+  exit 0
+fi
+
+# The last keeper could not hold the computer awake (no permission, no such program): no new
+# attempt on every event, one in ten minutes.
+if [ -f "$dir/failed" ] && [ -n "$(find "$dir/failed" -mmin -10 2>/dev/null)" ]; then
+  exit 0
+fi
+
+if ! command -v node >/dev/null 2>&1; then
+  echo "node is not on PATH of the agent's hooks ($PATH)" >"$dir/failed"
+  exit 0
+fi
+node "$root/lib/keeper.mjs" launch "$dir" </dev/null >/dev/null 2>&1
+exit 0

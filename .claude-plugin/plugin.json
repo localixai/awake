@@ -1,0 +1,19 @@
+{
+  "name": "awake",
+  "displayName": "awake",
+  "version": "0.1.0",
+  "description": "Keeps the computer awake while an agent works, and lets it sleep when the agent goes quiet.",
+  "author": {
+    "name": "Localix Lab"
+  },
+  "homepage": "https://github.com/localixai/awake",
+  "repository": "https://github.com/localixai/awake",
+  "license": "MIT",
+  "keywords": [
+    "sleep",
+    "caffeinate",
+    "keep-awake",
+    "hooks",
+    "agents"
+  ]
+}

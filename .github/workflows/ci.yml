@@ -1,0 +1,29 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  # Linux runs the hook and the keeper against a stand-in systemd-inhibit (the real one needs a
+  # desktop session); macOS runs them against a stand-in, and real.test.mjs against caffeinate.
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        node: [20, 22]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+      - run: sh -n bin/awake
+      - run: npm test
+      - name: Manifests are valid JSON
+        run: |
+          node -e "for (const f of ['.claude-plugin/plugin.json', '.claude-plugin/marketplace.json', 'plugin.json', 'hooks.json', 'hooks/hooks.json']) JSON.parse(require('fs').readFileSync(f, 'utf8'))"

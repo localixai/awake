@@ -1,0 +1,37 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.1.0/hooks.schema.json",
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "command": "./bin/awake",
+        "args": [
+          "hook"
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "command": "./bin/awake",
+        "args": [
+          "hook"
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "command": "./bin/awake",
+        "args": [
+          "hook"
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "command": "./bin/awake",
+        "args": [
+          "hook"
+        ]
+      }
+    ]
+  }
+}

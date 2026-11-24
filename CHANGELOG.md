@@ -1,0 +1,13 @@
+# Changelog
+
+## 0.1.0
+
+- **The computer stays awake while an agent works.** Every prompt, tool call, subagent, compaction
+  and answer marks the activity. One keeper process per user holds the computer awake
+  (`caffeinate -dims` on macOS, `systemd-inhibit` on Linux) and ends 15 minutes after the last
+  activity, taking the hold with it. `AWAKE_SECONDS` sets the window, `AWAKE=off` turns it off.
+- **One hold for every agent.** Sessions, clients and parallel tool calls share the one keeper. The
+  hook is a short shell script: it marks the activity and starts a keeper only when none runs.
+- **Claude Code and the Agent Plugins core.** The plugin carries both manifests and both hook
+  files, so the same folder loads in Claude Code and in any client of the core.
+- **`awake status`** says whether the computer is held awake and, when it is not, why.
