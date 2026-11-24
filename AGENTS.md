@@ -18,19 +18,22 @@ newer means sleep again, older means end, and the holder ends with it.
 | --- | --- |
 | `.claude-plugin/` | `plugin.json` (the Claude Code manifest), `marketplace.json` (this repo is its own marketplace) |
 | `plugin.json`, `hooks.json` | The Agent Plugins core manifest and hooks: the same plugin for a core client |
-| `hooks/hooks.json` | Claude Code's hooks: the events that mean work, each running `bin/awake hook` |
+| `hooks/hooks.json` | Claude Code's hooks: the events that mean work, each running `bin/awake hook`, and the hooks module |
+| `hooks/register.ts`, `hooks/label.ts` | The hooks module: Claude Code's status line entry (`awake: 14m`), read from the shared folder's file times |
 | `bin/awake` | The hook and `awake status`. POSIX `sh`, the hot path: no Node on a call that finds the keeper alive |
 | `lib/keeper.mjs` | The keeper: `launch`, `run`, `status` |
 | `lib/holder.mjs` | The system's keep-awake program per platform, tied to the keeper's process |
 | `lib/state.mjs` | The shared folder: the activity, `keeper.pid` and its claim lock, the failure, the log |
 | `test/` | Node tests (`npm test`): the units, the hook and keeper end to end, the real holder on macOS |
+| `tests/` | The hooks module's tests (`npm run test:mod`, through `claude plugin test`) |
 
 ## Commands
 
 | Command | |
 | --- | --- |
 | `npm test` | Every test. The end-to-end ones put a stand-in holder on `PATH`; `real.test.mjs` runs `caffeinate` on macOS. CI runs Linux and macOS on Node 20 and 22. |
-| `npm run validate` | `claude plugin validate . --strict` |
+| `npm run test:mod` | The hooks module: the label and the status line on a mocked clock and folder. Needs `claude`. |
+| `npm run validate` | `claude plugin validate . --strict`: the manifests, and the module and `tests/` type-checked against the running Claude Code's types |
 | `claude --plugin-dir .` | The working tree in a real session. `bin/awake status` shows what it holds. |
 
 ## Rules
@@ -43,6 +46,8 @@ newer means sleep again, older means end, and the holder ends with it.
   again (`lib/keeper.mjs`).
 - **The holder ends with the keeper.** It is tied to the keeper's process id (`caffeinate -w`,
   `tail --pid`), so a crash or a kill takes the hold along. A new platform's holder does the same.
+- **The status line stays minimal.** One short entry, no pane, no process: the module reads file
+  times only, and names the folder exactly as `bin/awake` does (`hooks/label.ts`, `stateDir`).
 - **Nothing reaches the agent.** The hook prints nothing and exits 0 whatever happens; failures go
   to `failed` and `awake.log` in the state folder and show in `awake status`.
 - **Both forms stay equivalent.** An event added to `hooks/hooks.json` that the core also defines is

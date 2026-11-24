@@ -56,6 +56,12 @@ new one.
 
 ## Is it holding now?
 
+In Claude Code the status line under the prompt says so: `awake: 14m` while the computer is held,
+with the minutes left, and `awake: not held` when the system refused the hold. Once no agent has
+worked for 15 minutes, the line goes away.
+
+In a shell, or in another client:
+
 ```bash
 awake status
 ```

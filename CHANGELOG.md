@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- **The status line shows how long the computer stays awake** in Claude Code: `awake: 14m` while it
+  is held, `awake: not held` when the system refused the hold, and nothing once no agent has worked
+  for the window. It reads two files' times every 30 seconds and a second after each prompt, and
+  starts no process. `AWAKE=off` hides it too.
+
 ## 0.1.0
 
 - **The computer stays awake while an agent works.** Every prompt, tool call, subagent, compaction

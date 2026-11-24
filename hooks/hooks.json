@@ -1,5 +1,5 @@
 {
-  "description": "Each sign of an agent working marks the activity; one keeper per user holds the computer awake until it goes quiet.",
+  "description": "Each sign of an agent working marks the activity; one keeper per user holds the computer awake until it goes quiet. In Claude Code a status line entry shows how long.",
   "hooks": {
     "UserPromptSubmit": [
       {
@@ -141,5 +141,8 @@
         ]
       }
     ]
-  }
+  },
+  "modules": [
+    "./register.ts"
+  ]
 }
